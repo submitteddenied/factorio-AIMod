@@ -1,7 +1,7 @@
 require 'task'
 require 'util'
 
-local accuracy = 1.0
+local accuracy = 0.2
 MoveToPointTask = Task:new()
 
 function MoveToPointTask:achieved (args)

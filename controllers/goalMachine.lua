@@ -1,4 +1,5 @@
 require 'tasks/task';
+require '../util/logger';
 GoalMachine = Task:new()
 
 function GoalMachine:new(o)
