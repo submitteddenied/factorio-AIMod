@@ -10,6 +10,7 @@ require 'controllers/goalMachine'
 local done = false;
 local once = true;
 local goalMachine = GoalMachine:new()
+Logger.LEVEL = "DEBUG";
 
 --craft iron axe
 goalMachine:pushStart({
