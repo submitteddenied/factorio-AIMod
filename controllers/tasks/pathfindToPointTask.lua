@@ -6,7 +6,7 @@ require '../util/logger'
 PathfindToPointTask = Task:new{pathFound = false}
 
 local heuristicCoeff = 1;
-local costCoeff = 0;
+local costCoeff = 1;
 
 function PathfindToPointTask:achieved(args)
   return self.pathFound;
@@ -40,7 +40,9 @@ local impassibleTiles = {
   "water",
   "water-green"
 }
-function PathfindToPointTask:isPassable(tile)
+
+local playerCollision
+function PathfindToPointTask:isPassable(player, tile)
   local onPlayerLayer = false;
   for i, tileType in ipairs(impassibleTiles) do
     if(tile.prototype.name == tileType) then
@@ -52,12 +54,16 @@ function PathfindToPointTask:isPassable(tile)
     return false;
   end
   
+
+  local entities = player.surface.find_entities_filtered{position=tile.position}
   --TODO: and not blocked by trees/rocks/structures
+  if(#entities > 0) then
+    return false;
+  end
   return true;
 end
 
 function PathfindToPointTask:pathfind(player)
-  player.print("Pathfinding!");
   local fringe = Fringe:new();
   local startTile = player.surface.get_tile(player.position.x, player.position.y);
   local startScore = self:computeTileScore(startTile);
@@ -76,28 +82,32 @@ function PathfindToPointTask:pathfind(player)
       --we found the destination!
       return bestPath;
     end
-    self:visit(leafTile.position.x, leafTile.position.y);
-    for i = -1, 1 do
-      for j = -1, 1 do
-        local nextCoord = {x = leafTile.position.x + i, y=leafTile.position.y + j};
-        if(not self:visited(nextCoord.x, nextCoord.y)) then
-          local nextTile = player.surface.get_tile(nextCoord.x, nextCoord.y);
-          if(self:isPassable(nextTile)) then
-            local newPath = {};
-            local idx = 1;
-            while(bestPath[idx] ~= nil) do
-              newPath[idx] = bestPath[idx];
-              idx = idx + 1;
+    if(not self:visited(leafTile.position.x, leafTile.position.y)) then
+      self:visit(leafTile.position.x, leafTile.position.y);
+      for i = -1, 1 do
+        for j = -1, 1 do
+          local nextCoord = {x = leafTile.position.x + i, y=leafTile.position.y + j};
+          if(not self:visited(nextCoord.x, nextCoord.y)) then
+            local nextTile = player.surface.get_tile(nextCoord.x, nextCoord.y);
+            if(self:isPassable(player, nextTile)) then
+              local newPath = {};
+              local idx = 1;
+              while(bestPath[idx] ~= nil) do
+                newPath[idx] = bestPath[idx];
+                idx = idx + 1;
+              end
+              newPath[idx] = nextTile;
+              tileScore = self:computeTileScore(nextTile);
+              tileScore.total = bestSolution.score.total + tileScore.tile;
+              fringe:add({path = newPath, score = tileScore});
             end
-            newPath[idx] = nextTile;
-            tileScore = self:computeTileScore(nextTile);
-            tileScore.total = bestSolution.score.total + tileScore.tile;
-            fringe:add({path = newPath, score = tileScore});
           end
         end
       end
     end
   end
+  Logger.log("PF> Error! Unable to find path!");
+  player.print("Unable to find path :(");
 end
 
 function PathfindToPointTask:tick(args)
@@ -105,11 +115,16 @@ function PathfindToPointTask:tick(args)
   -- find a path to self.x, self.y
 
   if(not self.pathFound) then
+    local dest = player.surface.get_tile(self.x, self.y)
+    if(not self:isPassable(player,dest)) then
+      Logger.log("PF> Destination is not walkable terrain (" .. dest.prototype.name .. ")")
+      self.pathFound = true;
+    end
     local path = self:pathfind(player);
     Logger.log("PF> Path found!");
     for i, tile in ipairs(path) do
       Logger.log("PF> Path step: " .. tile.position.x .. ", " .. tile.position.y .. " (" .. tile.prototype.name .. ")")
-      path[i] = MoveToPointTask:new(tile.position);
+      path[i] = MoveToPointTask:new({x=tile.position.x + 0.5, y = tile.position.y + 0.5});
     end
     args.machine:pushNext(path);
     self.pathFound = true;

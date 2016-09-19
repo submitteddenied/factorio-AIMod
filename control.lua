@@ -3,6 +3,7 @@ require 'dataloader'
 require 'util/logger'
 require 'controllers/tasks/gatherResourcesTask'
 require 'controllers/tasks/craftRecipeTask'
+require 'controllers/tasks/moveToPointTask'
 require 'controllers/tasks/pathfindToPointTask'
 require 'controllers/goalMachine'
 
@@ -13,11 +14,12 @@ local goalMachine = GoalMachine:new()
 --craft iron axe
 goalMachine:pushStart({
   CraftRecipeTask:new{recipe = "iron-axe", qty = 2},
+  MoveToPointTask:new{x = 50, y = 20 }
   -- GatherResourceTask:new{type = "iron-ore", qty = 10},
   -- GatherResourceTask:new{type = "coal", qty = 10},
   -- GatherResourceTask:new{type = "stone", qty = 10},
   -- GatherResourceTask:new{type = "copper-ore", qty = 10}
-  PathfindToPointTask:new{x = 200, y = 100}
+  --PathfindToPointTask:new{x = 50, y = 20}
 })
 
 -- start 229.7, 146.1
