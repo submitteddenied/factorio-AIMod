@@ -1,7 +1,7 @@
 require 'task'
 require 'util'
-require '../util/pathfinding_fringe'
-require '../util/logger'
+require 'util/pathfinding_fringe'
+require 'util/logger'
 local log = Logger.makeLogger("PathfindToPointTask");
 
 PathfindToPointTask = Task:new{pathFound = false}

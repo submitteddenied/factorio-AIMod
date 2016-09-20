@@ -13,7 +13,17 @@ function GoalMachine:achieved(arg)
   return self.goals == nil
 end
 
+function GoalMachine:addManager(manager)
+  self.managers = self.managers or {};
+  self.managers[#self.managers + 1] = manager;
+end
+
 function GoalMachine:tick(arg)
+  if(self.managers) then
+    for i, manager in pairs(self.managers) do
+      manager:tick{player=arg.player, machine=self};
+    end
+  end
   if(self.goals ~= nil) then
     if(self.goals.current:achieved{player=arg.player, machine=self}) then
       self.goals = self.goals.next;
