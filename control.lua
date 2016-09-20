@@ -10,17 +10,16 @@ require 'controllers/goalMachine'
 local done = false;
 local once = true;
 local goalMachine = GoalMachine:new()
-Logger.LEVEL = "DEBUG";
 
 --craft iron axe
 goalMachine:pushStart({
   CraftRecipeTask:new{recipe = "iron-axe", qty = 2},
-  MoveToPointTask:new{x = 50, y = 20 }
+  --MoveToPointTask:new{x = 50, y = 20 }
   -- GatherResourceTask:new{type = "iron-ore", qty = 10},
   -- GatherResourceTask:new{type = "coal", qty = 10},
   -- GatherResourceTask:new{type = "stone", qty = 10},
   -- GatherResourceTask:new{type = "copper-ore", qty = 10}
-  --PathfindToPointTask:new{x = 50, y = 20}
+  PathfindToPointTask:new{x = 50, y = 20}
 })
 
 -- start 229.7, 146.1
@@ -41,9 +40,18 @@ script.on_event(defines.events.on_tick, function(event)
   end
 end)
 
+-- peninsula
 --[[
 >>>AAANABQAAAADAwYAAAAEAAAAY29hbAMDAwoAAABjb3BwZXItb3Jl
 AwMDCQAAAGNydWRlLW9pbAMDAwoAAABlbmVteS1iYXNlAwMDCAAAAGl
 yb24tb3JlAwMDBQAAAHN0b25lAwMDMbU1VICEHgCAhB4AAwFa9nHa<<
+<
+--]]
+
+--peninsula with s-bend
+--[[
+>>>AAANABQAAAADAwYAAAAEAAAAY29hbAMDAwoAAABjb3BwZXItb3Jl
+AwMDCQAAAGNydWRlLW9pbAMDAwoAAABlbmVteS1iYXNlAwMDCAAAAGl
+yb24tb3JlAwMDBQAAAHN0b25lAwMDNqeYAYCEHgCAhB4AAwANu1Dz<<
 <
 --]]

@@ -39,5 +39,5 @@ function Fringe:pop()
 end
 
 function Fringe:size()
-  return self.count
+  return self.count or 0;
 end
