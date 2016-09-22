@@ -20,7 +20,7 @@ local goalMachine = GoalMachine:new()
 goalMachine:addManager(ToolManager:new());
 --craft iron axe
 goalMachine:pushStart({
-  BuildModuleTask:new{module=BurnerToFurnaceModule}
+  MoveToPointTask:new{x=200, y=123}
   -- PlayerGatherResourcesTask:new{type = "iron-ore", qty = 9},
   -- PlayerGatherResourcesTask:new{type = "coal", qty = 1},
   -- PlayerPlaceBuildingTask:new{type = "stone-furnace", position={x=5, y=5}, direction=defines.direction.north},
@@ -35,7 +35,7 @@ script.on_event(defines.events.on_tick, function(event)
 
   if(once) then
     once = false;
-    Logger.log("player start position " .. player.position.x .. ", " .. player.position.y)
+    Logger.log("player start position " .. player.position.x .. ", " .. player.position.y);
   end
 
   if(not goalMachine:achieved{ player=player }) then
