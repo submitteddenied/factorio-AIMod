@@ -15,7 +15,7 @@ require 'controllers/goalMachine'
 local done = false;
 local once = true;
 local goalMachine = GoalMachine:new()
--- Logger.LEVEL = "DEBUG";
+--Logger.LEVEL = "DEBUG";
 
 goalMachine:addManager(ToolManager:new());
 --craft iron axe
