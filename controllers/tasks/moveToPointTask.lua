@@ -68,6 +68,7 @@ function MoveToPointTask:getDirection(bearing)
 end
 
 function MoveToPointTask:multiplyBearing(bearing, i)
+  --TODO: really we want something like max_turn_rate - bearing
   local sign = (bearing < 0 and -1) or 1
   return sign * (1/i) * math.min(math.abs(bearing) * 1.4, collision_turn_rate);
 end
