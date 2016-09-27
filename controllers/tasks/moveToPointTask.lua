@@ -4,14 +4,18 @@ require('util/passable');
 
 local accuracy = 0.15;
 local num_projections = 6;
-local max_turn_rate = 50; -- degrees
-local collision_turn_rate = 180; --max_turn_rate * 2;
+local max_turn_rate = 6; -- degrees
+local collision_turn_rate = max_turn_rate * 2;
 local feeler_width = 0.8;
-local debug = true;
+local debug = false;
 local sin = function (x) return math.sin(math.rad(x)) end
 local cos = function (x) return math.cos(math.rad(x)) end
 local log = Logger.makeLogger("MoveToPointTask");
 MoveToPointTask = Task:new()
+
+local function sign(x)
+   return (x < 0 and -1) or 1
+end
 
 function MoveToPointTask:achieved (args)
   local player = args.player;
@@ -68,9 +72,11 @@ function MoveToPointTask:getDirection(bearing)
 end
 
 function MoveToPointTask:multiplyBearing(bearing, i)
-  --TODO: really we want something like max_turn_rate - bearing
-  local sign = (bearing < 0 and -1) or 1
-  return sign * (1/i) * math.min(math.abs(bearing) * 1.4, collision_turn_rate);
+  local turn_amount = collision_turn_rate - math.abs(bearing);
+  if(turn_amount < 0) then
+    turn_amount = collision_turn_rate;
+  end
+  return sign(bearing) * (1/i) * turn_amount;
 end
 
 function MoveToPointTask:clampBearing()
@@ -83,12 +89,8 @@ function MoveToPointTask:tick (args)
   if(not self.current_bearing) then
     self.current_bearing = 0;
   end
-  --TODO: Handle going from 359.9deg -> 0deg
-  if(self.current_bearing < target_bearing) then
-    self.current_bearing = self.current_bearing + math.min(max_turn_rate, target_bearing - self.current_bearing);
-  elseif(self.current_bearing > target_bearing) then
-    self.current_bearing = self.current_bearing - math.min(max_turn_rate, self.current_bearing - target_bearing);
-  end
+  local turn_amount = target_bearing - self.current_bearing;
+  self.current_bearing = self.current_bearing + (sign(turn_amount) * math.min(max_turn_rate, math.abs(turn_amount)));
 
   if(not self.feelers) then
     self.feelers = {};
@@ -136,22 +138,22 @@ function MoveToPointTask:tick (args)
         log("Terrain collision detected at (" .. tile_position.x .. ", ".. tile_position.y ..") -> " .. relative_bearing, "DEBUG");
         --self.current_bearing = self.current_bearing - relative_bearing;
       end
-      local entities = player.surface.find_entities_filtered{area=collision_area, type="tree"};
-      if(#entities > 0) then
-        has_collision = true;
-        local closest = entities[1];
-        local closest_distance = util.distance(player.position, closest.position);
-        for j, entity in pairs(entities) do
-          local entity_distance = util.distance(player.position, entity.position);
-          if(entity_distance < closest_distance) then
-            closest = entity;
-            closest_distance = entity_distance;
+      --tree,stone-rock,small-rock
+      for z, type in pairs({{"type", "tree"}, {"name", "stone-rock"}, {"name", "small-rock"}}) do
+        local params = {area=collision_area}
+        params[type[1]] = type[2];
+        local entities = player.surface.find_entities_filtered(params);
+        if(#entities > 0) then
+          --has_collision = true;
+          local closest = entities[1];
+          local closest_distance = util.distance(player.position, closest.position);
+          for j, entity in pairs(entities) do
+            local entity_bearing = self:getBearingToTarget(player, entity.position);
+            local relative_bearing = entity_bearing - self.current_bearing;
+            log("Entity collision detected at (" .. entity.position.x .. ", ".. entity.position.y ..") -> " .. relative_bearing, "INFO");
+            total_steering_force = total_steering_force + self:multiplyBearing(relative_bearing, i);
           end
         end
-        local entity_bearing = self:getBearingToTarget(player, closest.position);
-        local relative_bearing = entity_bearing - self.current_bearing;
-        log("Entity collision detected at (" .. closest.position.x .. ", ".. closest.position.y ..") -> " .. relative_bearing, "INFO");
-        total_steering_force = total_steering_force + self:multiplyBearing(relative_bearing, i);
       end
     end
     if(debug) then
