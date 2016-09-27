@@ -9,6 +9,7 @@ require 'controllers/tasks/moveToPointTask'
 require 'controllers/tasks/pathfindToPointTask'
 require 'controllers/tasks/build_module_task'
 require 'controllers/modules/burner_to_furnace'
+require 'controllers/modules/burner_to_burner'
 require 'controllers/managers/tool_manager'
 require 'controllers/goalMachine'
 
@@ -20,12 +21,9 @@ local goalMachine = GoalMachine:new()
 goalMachine:addManager(ToolManager:new());
 --craft iron axe
 goalMachine:pushStart({
-  MoveToPointTask:new{x=200, y=123}
-  -- PlayerGatherResourcesTask:new{type = "iron-ore", qty = 9},
-  -- PlayerGatherResourcesTask:new{type = "coal", qty = 1},
-  -- PlayerPlaceBuildingTask:new{type = "stone-furnace", position={x=5, y=5}, direction=defines.direction.north},
-  -- PlayerGatherResourcesTask:new{type = "stone", qty = 5},
-  -- PlayerGatherResourcesTask:new{type = "iron-plate", qty = 9}
+  BuildModuleTask:new{module=BurnerToFurnaceModule},
+  BuildModuleTask:new{module=BurnerToBurnerModule}
+
 })
 
 -- start 229.7, 146.1

@@ -2,6 +2,7 @@ require 'task'
 require 'util'
 require 'util/logger'
 require 'controllers/tasks/playerPlaceBuildingTask'
+require 'util/inventories'
 
 BuildModuleTask = Task:new()
 local log = Logger.makeLogger("BuildModuleTask");
@@ -56,6 +57,23 @@ end
 
 function BuildModuleTask:tick (args)
   local player = args.player;
+  local required_buildings = {};
+  for i, building in pairs(self.module.buildings) do
+    if(not required_buildings[building.type]) then
+      required_buildings[building.type] = 0;
+    end
+    required_buildings[building.type] = required_buildings[building.type] + 1;
+  end
+
+  for type, count in pairs(required_buildings) do
+
+    local inv_count = Inventories.total_craftable_count(player, type);
+    if(inv_count < count) then
+      local required_count = count - inv_count;
+      log("We require " .. required_count .. " more " .. type .. " for this module", "INFO");
+      args.machine:pushSingle(CraftRecipeTask:new{recipe=type, qty=required_count});
+    end
+  end
   if(self.module.resource ~= nil) then
     local resources = player.surface.find_entities_filtered{area =
       {{player.position.x - range, player.position.y - range}, {player.position.x + range, player.position.y + range}},

@@ -10,12 +10,12 @@ Base Modules:
 
 BurnerToFurnaceModule = {
   name="BurnerToFurnace",
-  resource="coal",
+  resource="iron-ore",
   geometry={
-    {position={x=0, y=0}, resource="coal"},
-    {position={x=0, y=1}, resource="coal"},
-    {position={x=1, y=0}, resource="coal"},
-    {position={x=1, y=1}, resource="coal"},
+    {position={x=0, y=0}, resource="iron-ore"},
+    {position={x=0, y=1}, resource="iron-ore"},
+    {position={x=1, y=0}, resource="iron-ore"},
+    {position={x=1, y=1}, resource="iron-ore"},
     {position={x=2, y=0}},
     {position={x=2, y=1}},
     {position={x=3, y=0}},
@@ -27,7 +27,6 @@ BurnerToFurnaceModule = {
   },
   inputs={
     {building=1, type="coal", ongoing=true},
-    {building=2, type="coal", ongoing=true},
     {building=2, type="iron-ore", ongoing=true}
   },
   outputs={

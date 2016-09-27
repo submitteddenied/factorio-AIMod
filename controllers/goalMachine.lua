@@ -33,10 +33,12 @@ function GoalMachine:tick(arg)
   end
 end
 
+-- do this task immediately
 function GoalMachine:pushSingle(goal)
   self.goals = { current = goal, next = self.goals };
 end
 
+-- do this next
 function GoalMachine:pushSingleNext(goal)
   self.goals.next = { current = goal, next = self.goals.next };
 end
