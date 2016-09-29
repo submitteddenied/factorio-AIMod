@@ -1,7 +1,7 @@
 require 'task'
 require 'util'
 require 'util/logger'
-require 'controllers/tasks/playerPlaceBuildingTask'
+require 'controllers/tasks/build_building_task'
 require 'util/inventories'
 
 BuildModuleTask = Task:new()
@@ -19,14 +19,14 @@ local impassibleTiles = {
   "water",
   "water-green"
 };
-
+local TILE_OFFSET = 0;
 function BuildModuleTask:canBuildAtPosition(player, position)
   --for each item in the geometry, verify
   --  a) it's not water (unless it should be)
   --  b) it has the resource it needs (if it need one)
   for i, item in pairs(self.module.geometry) do
     local offset = item.position;
-    local offsetPosition = {x=position.x + offset.x, y=position.y + offset.y};
+    local offsetPosition = {x=position.x + offset.x + TILE_OFFSET, y=position.y + offset.y + TILE_OFFSET};
     local tile = player.surface.get_tile(offsetPosition.x, offsetPosition.y);
     for i, tileName in pairs(impassibleTiles) do
       if(tile.prototype.name == tileName) then
@@ -39,12 +39,14 @@ function BuildModuleTask:canBuildAtPosition(player, position)
       end
     end
     if(item.resource ~= nil) then
-      local entities = player.surface.find_entities_filtered{position=offsetPosition}
+      local entities = player.surface.find_entities_filtered{position=offsetPosition, type="resource"}
       local foundResource = false;
       for i, entity in pairs(entities) do
         if(entity.prototype.name == item.resource) then
           foundResource = true;
           break;
+        elseif(entity.prototype.type == "resource") then
+          return false;
         end
       end
       if(not foundResource) then
@@ -78,6 +80,9 @@ function BuildModuleTask:tick (args)
     local resources = player.surface.find_entities_filtered{area =
       {{player.position.x - range, player.position.y - range}, {player.position.x + range, player.position.y + range}},
       name=self.module.resource}
+    table.sort(resources, function(a, b)
+      return util.distance(player.position, a.position) < util.distance(player.position, b.position);
+    end)
     for i, resource in pairs(resources) do
       local position = resource.position;
       if(self:canBuildAtPosition(player, position)) then
@@ -86,7 +91,7 @@ function BuildModuleTask:tick (args)
         local tasks = {};
         for i, building in pairs(self.module.buildings) do
           local building_position = {x=position.x + building.position.x, y=position.y + building.position.y};
-          tasks[#tasks + 1] = PlayerPlaceBuildingTask:new{type=building.type,
+          tasks[#tasks + 1] = BuildBuildingTask:new{type=building.type,
                                                       position=building_position,
                                                       direction=building.direction or defines.direction.north}
 

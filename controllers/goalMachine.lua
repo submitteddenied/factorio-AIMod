@@ -27,6 +27,7 @@ function GoalMachine:tick(arg)
   if(self.goals ~= nil) then
     if(self.goals.current:achieved{player=arg.player, machine=self}) then
       self.goals = self.goals.next;
+      -- arg.player.set_goal_description
     else
       self.goals.current:tick{player=arg.player, machine=self};
     end

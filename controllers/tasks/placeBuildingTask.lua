@@ -1,33 +1,49 @@
 require 'task'
 require 'util'
+require 'util/inventories'
+require 'controllers/tasks/moveToPointTask'
 
+--[[
+  PlaceBuildingTask moves to a location within range of building stuff and
+  places the item from your inventory on the ground.
+  Obstacles are not cleared in order to build the entity.
+]]--
 PlaceBuildingTask = Task:new()
+local player_build_distance = 6; --see base/prototypes/entity/demo-entity.lua (player prototype)
 
 function PlaceBuildingTask:achieved (args)
-  local player = args.player;
-  if(self.placed) then
-    player.set_goal_description(""); --clear the goal
-    return true;
-  else
-    return false;
-  end
+  return self.placed ~= nil;
+end
+
+function PlaceBuildingTask:toString()
+  return "PlaceBuildingTask - type: " .. self.type .. " position: (" .. self.position.x .. ", " .. self.position.y .. ")";
 end
 
 function PlaceBuildingTask:tick (args)
   local player = args.player;
-
-  local entities = player.surface.find_entities_filtered{position=self.position}
-  self.placed = false;
-  for i, entity in pairs(entities) do
-    --TODO verify that there's space to place the building and possibly clear out trees etc
-    if(entity.prototype.name == self.type and entity.direction == self.direction) then
-      self.placed = true;
+  local prototype = game.entity_prototypes[self.type];
+  if(util.distance(player.position, self.position) > player_build_distance) then
+    args.machine:pushSingle(MoveToPointTask:new{x=self.position.x, y=self.position.y + prototype.collision_box.left_top.y - 1})
+  else
+    if(player.surface.can_place_entity{name=self.type, position=self.position, direction=self.direction, force=player.force}) then
+      local inventories = Inventories.get_all_inventories(player);
+      for i, inv in ipairs(inventories) do
+        if(inv.get_item_count(self.type) > 0) then
+          local removed = inv.remove({name=self.type, count=1});
+          if(removed == 1) then
+            local entity = player.surface.create_entity{
+              name=self.type,
+              position=self.position,
+              direction=self.direction,
+              force=player.force
+            };
+            self.placed = entity;
+            break;
+          end
+        end
+      end
+    else
+      player.print("Unable to place building")
     end
   end
-  self.started = self.started or false;
-  if(not self.placed) then
-    --TODO AI place the building
-  end
-
-  self.started = true;
 end

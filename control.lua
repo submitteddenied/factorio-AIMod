@@ -4,10 +4,14 @@ require 'util/logger'
 require 'controllers/tasks/gatherResourcesTask'
 require 'controllers/tasks/playerGatherResourcesTask'
 require 'controllers/tasks/playerPlaceBuildingTask'
+require 'controllers/tasks/placeBuildingTask'
 require 'controllers/tasks/craftRecipeTask'
 require 'controllers/tasks/moveToPointTask'
 require 'controllers/tasks/pathfindToPointTask'
 require 'controllers/tasks/build_module_task'
+require 'controllers/tasks/mine_entity_task'
+require 'controllers/tasks/clear_area_task'
+require 'controllers/tasks/build_building_task'
 require 'controllers/modules/burner_to_furnace'
 require 'controllers/modules/burner_to_burner'
 require 'controllers/managers/tool_manager'
@@ -22,8 +26,7 @@ goalMachine:addManager(ToolManager:new());
 --craft iron axe
 goalMachine:pushStart({
   BuildModuleTask:new{module=BurnerToFurnaceModule},
-  BuildModuleTask:new{module=BurnerToBurnerModule}
-
+  --BuildModuleTask:new{module=BurnerToBurnerModule}
 })
 
 -- start 229.7, 146.1

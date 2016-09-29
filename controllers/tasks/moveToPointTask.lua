@@ -2,9 +2,9 @@ require 'task'
 require 'util'
 require('util/passable');
 
-local accuracy = 0.15;
+local accuracy = 1;
 local num_projections = 6;
-local max_turn_rate = 6; -- degrees
+local max_turn_rate = 10; -- degrees
 local collision_turn_rate = max_turn_rate * 2;
 local feeler_width = 0.8;
 local debug = false;
@@ -87,7 +87,7 @@ function MoveToPointTask:tick (args)
   local player = args.player;
   local target_bearing = self:getBearingToTarget(player);
   if(not self.current_bearing) then
-    self.current_bearing = 0;
+    self.current_bearing = target_bearing;
   end
   local turn_amount = target_bearing - self.current_bearing;
   self.current_bearing = self.current_bearing + (sign(turn_amount) * math.min(max_turn_rate, math.abs(turn_amount)));
