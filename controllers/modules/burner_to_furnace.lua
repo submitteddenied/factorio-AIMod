@@ -22,8 +22,8 @@ BurnerToFurnaceModule = {
     {position={x=3, y=1}}
   },
   buildings={
-    {type="burner-mining-drill", position={x=1, y=1}, direction=defines.direction.east},
-    {type="stone-furnace", position={x=3, y=1}}
+    {type="burner-mining-drill", position={x=0, y=0}, direction=defines.direction.east},
+    {type="stone-furnace", position={x=2, y=0}}
   },
   inputs={
     {building=1, type="coal", ongoing=true},
