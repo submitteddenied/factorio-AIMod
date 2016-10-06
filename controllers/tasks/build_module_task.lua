@@ -92,6 +92,7 @@ function BuildModuleTask:tick (args)
         for i, building in pairs(self.module.buildings) do
           local building_position = {x=position.x + building.position.x, y=position.y + building.position.y};
           tasks[#tasks + 1] = BuildBuildingTask:new{type=building.type,
+                                                      building=building,
                                                       position=building_position,
                                                       direction=building.direction or defines.direction.north}
 

@@ -8,7 +8,9 @@ Base Modules:
     - providers of some end product
 --]]
 
-BurnerToBurnerModule = {
+require 'base_module'
+
+BurnerToBurnerModule = BaseModule:new{
   name="BurnerToBurner",
   resource="coal",
   geometry={
@@ -26,7 +28,7 @@ BurnerToBurnerModule = {
     {type="burner-mining-drill", position={x=3, y=1}}
   },
   inputs={
-    {building=1, type="coal", ongoing=false}
+    {building=1, type="coal", slot="fuel", ongoing=false}
   },
   outputs={
     {building=1, type="coal"},

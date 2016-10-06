@@ -6,6 +6,11 @@ require 'controllers/tasks/clear_area_task'
 --[[
   BuildBuildingTask makes sure the area is clear and then starts the place buidling
   task.
+   - type: string; The kind of building to build
+   - building: table; (Optional) The buidling table in the module to connect
+                      the placed entity with
+   - position: {x=number,y=number}; the location to build the building
+   - direction: defines.direction; The orientation for the building
 ]]--
 BuildBuildingTask = Task:new{enqueued=false}
 
@@ -27,7 +32,7 @@ function BuildBuildingTask:tick (args)
   };
   args.machine:pushStart({
     ClearAreaTask:new{area=area},
-    PlaceBuildingTask:new{type=self.type, position=self.position, direction=self.direction}
+    PlaceBuildingTask:new{type=self.type, position=self.position, building=self.building direction=self.direction}
   });
   self.enqueued = true;
 end

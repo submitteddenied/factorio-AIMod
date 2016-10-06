@@ -7,6 +7,11 @@ require 'controllers/tasks/moveToPointTask'
   PlaceBuildingTask moves to a location within range of building stuff and
   places the item from your inventory on the ground.
   Obstacles are not cleared in order to build the entity.
+   - type: string; The kind of building to build
+   - building: table; (Optional) The buidling table in the module to connect
+                      the placed entity with
+   - position: {x=number,y=number}; the location to build the building
+   - direction: defines.direction; The orientation for the building
 ]]--
 PlaceBuildingTask = Task:new()
 local player_build_distance = 6; --see base/prototypes/entity/demo-entity.lua (player prototype)
@@ -31,6 +36,7 @@ function PlaceBuildingTask:tick (args)
         if(inv.get_item_count(self.type) > 0) then
           local removed = inv.remove({name=self.type, count=1});
           if(removed == 1) then
+            --is the player's "active item" inventory (defines.inventory.item_active) the one in the mouse?
             local entity = player.surface.create_entity{
               name=self.type,
               position=self.position,
@@ -38,6 +44,9 @@ function PlaceBuildingTask:tick (args)
               force=player.force
             };
             self.placed = entity;
+            if(self.building ~= nil) then
+              self.building.entity = entity;
+            end
             break;
           end
         end

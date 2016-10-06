@@ -1,7 +1,12 @@
 require 'task'
 require 'util'
-require 'controllers/tasks/playerGatherResourcesTask'
-
+require 'controllers/tasks/gatherResourcesTask'
+--[[
+  CraftRecipeTask
+  Causes the player to craft the given recipe.
+   - recipe: string; The name of the recipe to craft
+   - qty: number; The quantity of the given recipe to craft
+]]
 CraftRecipeTask = Task:new{goalSet=false}
 
 function CraftRecipeTask:achieved (args)
@@ -15,7 +20,13 @@ function CraftRecipeTask:tick (args)
     local recipe = player.force.recipes[self.recipe]
 
     if((not recipe) or (not recipe.enabled)) then
-      player.print("I don't know how to craft " .. self.recipe)
+      local reason;
+      if(not recipe) then
+        reason = "there is no such recipe";
+      else
+        reason = "the recipe is not enabled (needs tech?)"
+      end
+      log("Unable to craft " .. self.recipe .. ", " .. reason, "ERROR")
       return
     end
 
@@ -35,8 +46,9 @@ function CraftRecipeTask:tick (args)
       end
       --enqueue a gatherResourcesTask for each of them
       for i, requirement in pairs(required) do
-        args.machine:pushSingle(PlayerGatherResourcesTask:new{type=requirement.name, qty=requirement.qty});
+        args.machine:pushSingle(GatherResourceTask:new{type=requirement.name, qty=requirement.qty});
       end
+      return;
     end
 
     local numEnqueued = player.begin_crafting{count= self.qty, recipe=recipe}

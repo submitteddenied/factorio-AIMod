@@ -7,8 +7,9 @@ Base Modules:
     - consumers of fuel/recipe ingredients
     - providers of some end product
 --]]
+require 'base_module'
 
-BurnerToFurnaceModule = {
+BurnerToFurnaceModule = BaseModule:new{
   name="BurnerToFurnace",
   resource="iron-ore",
   geometry={
@@ -26,8 +27,8 @@ BurnerToFurnaceModule = {
     {type="stone-furnace", position={x=3, y=1}}
   },
   inputs={
-    {building=1, type="coal", ongoing=true},
-    {building=2, type="iron-ore", ongoing=true}
+    {building=1, type="coal", slot="fuel", ongoing=true},
+    {building=2, type="coal", slot="fuel", ongoing=true}
   },
   outputs={
     {building=2, type="iron-plate"}
