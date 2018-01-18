@@ -24,8 +24,8 @@ BurnerToBurnerModule = BaseModule:new{
     {position={x=3, y=1}, resource="coal"}
   },
   buildings={
-    {type="burner-mining-drill", position={x=1, y=1}, direction=defines.direction.east},
-    {type="burner-mining-drill", position={x=3, y=1}}
+    {type="burner-mining-drill", position={x=0, y=0}, direction=defines.direction.east},
+    {type="burner-mining-drill", position={x=2, y=0}}
   },
   inputs={
     {building=1, type="coal", slot="fuel", ongoing=false}

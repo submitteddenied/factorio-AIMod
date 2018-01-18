@@ -1,6 +1,7 @@
 require 'task'
 require 'util'
 require 'util/inventories'
+require 'util/collision'
 require 'controllers/tasks/moveToPointTask'
 
 --[[
@@ -27,8 +28,9 @@ end
 function PlaceBuildingTask:tick (args)
   local player = args.player;
   local prototype = game.entity_prototypes[self.type];
-  if(util.distance(player.position, self.position) > player_build_distance) then
-    args.machine:pushSingle(MoveToPointTask:new{x=self.position.x, y=self.position.y + prototype.collision_box.left_top.y - 1})
+  if(util.distance(player.position, self.position) > player_build_distance or
+          overlappingBoundingBox(player.position, game.entity_prototypes["player"].collision_box, self.position, prototype.collision_box)) then
+    args.machine:pushSingle(MoveToPointTask:new{x=self.position.x, y=self.position.y + prototype.collision_box.left_top.y - 2})
   else
     if(player.surface.can_place_entity{name=self.type, position=self.position, direction=self.direction, force=player.force}) then
       local inventories = Inventories.get_all_inventories(player);
