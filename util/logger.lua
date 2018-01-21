@@ -1,5 +1,5 @@
 Logger = {
-  LEVEL= "INFO",
+  LEVEL= "DEBUG",
   LEVELS = {
     "DEBUG",
     "INFO",
@@ -13,6 +13,7 @@ for key,val in pairs( Logger.LEVELS ) do levelsToIndex[ val ] = key end
 
 -- DEBUG, INFO, WARN, ERROR
 local path = "output.log";
+
 
 function Logger.log(message)
   game.write_file(path, message .. "\n", true);

@@ -5,6 +5,7 @@ require 'controllers/tasks/build_building_task'
 require 'util/inventories'
 
 BuildModuleTask = Task:new()
+
 local log = Logger.makeLogger("BuildModuleTask");
 
 function BuildModuleTask:achieved (args)

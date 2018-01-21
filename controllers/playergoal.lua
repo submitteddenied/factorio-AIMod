@@ -1,5 +1,5 @@
 local goals = {
-  coal = {name = "coal", tick = getCoal, param = 50, next = "done"}
+  coal = {name = "coal", tick = getCoal, param = 50, next = "done"},
   done = {name = "done", tick = done}
 };
 
