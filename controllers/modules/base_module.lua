@@ -1,6 +1,8 @@
 require 'controllers/tasks/fuel_building_task'
 require 'controllers/tasks/wait_for_output_task'
 
+BaseModule = {}
+
 function BaseModule:new(o)
   o = o or {};
   setmetatable(o, self);

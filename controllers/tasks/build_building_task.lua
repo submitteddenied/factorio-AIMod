@@ -32,7 +32,7 @@ function BuildBuildingTask:tick (args)
   };
   args.machine:pushStart({
     ClearAreaTask:new{area=area},
-    PlaceBuildingTask:new{type=self.type, position=self.position, building=self.building direction=self.direction}
+    PlaceBuildingTask:new{type=self.type, position=self.position, {building=self.building}, {direction=self.direction}}
   });
   self.enqueued = true;
 end

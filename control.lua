@@ -7,6 +7,7 @@ require 'controllers/tasks/playerPlaceBuildingTask'
 require 'controllers/tasks/placeBuildingTask'
 require 'controllers/tasks/craftRecipeTask'
 require 'controllers/tasks/moveToPointTask'
+require 'controllers/tasks/fuel_building_task'
 require 'controllers/tasks/pathfindToPointTask'
 require 'controllers/tasks/build_module_task'
 require 'controllers/tasks/mine_entity_task'
@@ -34,7 +35,9 @@ script.on_event(defines.events.on_player_created, function(event)
   goal_machine:addManager(ToolManager:new());
   goal_machine:pushStart({
     BuildModuleTask:new{module=BurnerToFurnaceModule},
-    BuildModuleTask:new{module=BurnerToBurnerModule}
+    BuildModuleTask:new{module=BurnerToBurnerModule },
+    FuelBuildingTask:new{}
+
   });
 
   global.resource_managers[player.index] = resource_manager;

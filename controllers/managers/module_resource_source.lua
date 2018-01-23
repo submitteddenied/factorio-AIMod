@@ -25,7 +25,7 @@ function ModuleResourceSource:gather(opts)
   -- is there any of "type" available?
   local tasks = {};
   if(not this.module:hasOutputAvailable(opts.type)) then
-    tasks = this.module:generateTasksForOutput(opts.type, opts.qty))
+    tasks = this.module:generateTasksForOutput(opts.type, opts.qty)
   end
   tasks[#tasks + 1] = CollectModuleOutputTask:new{module=this.module, qty=opts.qty};
   opts.machine:pushStart(tasks);
